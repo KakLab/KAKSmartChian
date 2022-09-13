@@ -284,6 +284,9 @@ func prepare(ctx *cli.Context) {
 	case ctx.GlobalIsSet(utils.KilnFlag.Name):
 		log.Info("Starting Geth on Kiln testnet...")
 
+	case ctx.GlobalIsSet(utils.KAKFlag.Name):
+		log.Info("Starting Geth on KAK net...")
+
 	case ctx.GlobalIsSet(utils.DeveloperFlag.Name):
 		log.Info("Starting Geth in ephemeral dev mode...")
 
@@ -298,6 +301,7 @@ func prepare(ctx *cli.Context) {
 			!ctx.GlobalIsSet(utils.RinkebyFlag.Name) &&
 			!ctx.GlobalIsSet(utils.GoerliFlag.Name) &&
 			!ctx.GlobalIsSet(utils.KilnFlag.Name) &&
+			!ctx.GlobalIsSet(utils.KAKFlag.Name) &&
 			!ctx.GlobalIsSet(utils.DeveloperFlag.Name) {
 			// Nope, we're really on mainnet. Bump that cache up!
 			log.Info("Bumping default cache on mainnet", "provided", ctx.GlobalInt(utils.CacheFlag.Name), "updated", 4096)

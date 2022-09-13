@@ -8,6 +8,7 @@ import (
 	"github.com/umbracle/ethgo/abi"
 	"github.com/umbracle/ethgo/contract"
 	"github.com/umbracle/ethgo/jsonrpc"
+	"math/big"
 )
 
 // http url for contract call
@@ -21,10 +22,10 @@ func SetStake(httpPort string) {
 func getStake() []*common.Address {
 
 	waddr := getWtake()
-	if waddr == nil{
+	if waddr == nil {
 		return nil
 	}
-	if waddr.String() == "0x0000000000000000000000000000000000000000"{
+	if waddr.String() == "0x0000000000000000000000000000000000000000" {
 		return nil
 	}
 
@@ -64,6 +65,49 @@ func getStake() []*common.Address {
 	}
 	log.Info(fmt.Sprintf("stake signer list:%s", addrs))
 	return addrs
+}
+
+// get stake list for contract
+func getStakeAmount() *big.Int {
+	waddr := getWtake()
+	if waddr == nil {
+		return big.NewInt(0)
+	}
+	if waddr.String() == "0x0000000000000000000000000000000000000000" {
+		return big.NewInt(0)
+	}
+
+	// function list
+	var functions = []string{
+		"function stakedAmount() public view returns (uint256)",
+	}
+
+	// new contract
+	abiContract, err := abi.NewABIFromList(functions)
+	if err != nil {
+		return big.NewInt(0)
+	}
+
+	// grpc
+	addr := ethgo.HexToAddress(waddr.String())
+	client, err := jsonrpc.NewClient(httpUrl)
+	if err != nil {
+		return big.NewInt(0)
+	}
+
+	// call contract
+	c := contract.NewContract(addr, abiContract, contract.WithJsonRPC(client.Eth()))
+	res, err := c.Call("stakedAmount", ethgo.Latest)
+	if err != nil {
+		return big.NewInt(0)
+	}
+
+	if amount, ok := res["0"].(*big.Int); ok {
+		return amount
+	}
+
+	//log.Info(fmt.Sprintf("stake signer list:%s", ))
+	return big.NewInt(0)
 }
 
 func getWtake() *common.Address {

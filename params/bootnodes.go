@@ -83,6 +83,14 @@ var KilnBootnodes = []string{
 	"enode://b74bd2e8a9f0c53f0c93bcce80818f2f19439fd807af5c7fbc3efb10130c6ee08be8f3aaec7dc0a057ad7b2a809c8f34dc62431e9b6954b07a6548cc59867884@164.92.140.200:30303",
 }
 
+var KAKBootnodes = []string{
+	"enode://288330a1faa01315a5105f7e4c14f42d76d21203f6560b02755d8ac2f257a3e0ab1ed17859a2a9c1b17829556359eb035d249948c1258f118ef648ab0671c8c1@8.219.86.139:30303",
+	"enode://978b752f3567633e4ada778c0f30c533b8088a8dc31eac83729998ced5873c5b4e48426956714c3d08621926d7dfa83c4c1f3083abe078879926e51658319e6c@8.219.86.139:30304",
+	"enode://2015ae0b66013b204f69deb7358f9098ce3668eb5db2578b0e21946ffbe11954f829f432941daa58aaefba4bf9a40f607ddfa2cfc97e9259063ab035fe6da33f@8.219.86.139:30305",
+
+	//"enode://288330a1faa01315a5105f7e4c14f42d76d21203f6560b02755d8ac2f257a3e0ab1ed17859a2a9c1b17829556359eb035d249948c1258f118ef648ab0671c8c1@192.168.2.165:30303",
+}
+
 var V5Bootnodes = []string{
 	// Teku team's bootnode
 	"enr:-KG4QOtcP9X1FbIMOe17QNMKqDxCpm14jcX5tiOE4_TyMrFqbmhPZHK_ZPG2Gxb1GE2xdtodOfx9-cgvNtxnRyHEmC0ghGV0aDKQ9aX9QgAAAAD__________4JpZIJ2NIJpcIQDE8KdiXNlY3AyNTZrMaEDhpehBDbZjM_L9ek699Y7vhUJ-eAdMyQW_Fil522Y0fODdGNwgiMog3VkcIIjKA",
@@ -117,6 +125,8 @@ func KnownDNSNetwork(genesis common.Hash, protocol string) string {
 		net = "rinkeby"
 	case GoerliGenesisHash:
 		net = "goerli"
+	case KAKGenesisHash:
+		net = "kak"
 	default:
 		return ""
 	}

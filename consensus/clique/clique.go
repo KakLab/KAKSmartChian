@@ -606,18 +606,16 @@ func (c *Clique) Prepare(chain consensus.ChainHeaderReader, header *types.Header
 func (c *Clique) Finalize(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header) {
 	// No block rewards in PoA, so the state remains as is and uncles are dropped
 	// kak pos miner reward
-	period := header.Number.Uint64() / uint64(KAKRewardPeriod)
-	reward := new(big.Int).Set(KAKBlockReward)
-	if period != 0 {
-		period = uint64(math.Pow(float64(2), float64(period)))
-		reward.Div(reward, big.NewInt(int64(period)))
-	}
-
-	addr, err := c.Author(header)
-	if err != nil {
-		addr = c.signer
-	}
-	state.AddBalance(addr, reward)
+	//reward := new(big.Int).Set(KAKBlockReward)
+	//if header.Number.Uint64()>57069{ // just for test
+	//	reward = rewardByStep(header)
+	//}
+	//
+	//addr, err := c.Author(header)
+	//if err != nil {
+	//	addr = c.signer
+	//}
+	//state.AddBalance(addr, reward)
 	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
 	header.UncleHash = types.CalcUncleHash(nil)
 }
@@ -799,4 +797,42 @@ func encodeSigHeader(w io.Writer, header *types.Header) {
 	if err := rlp.Encode(w, enc); err != nil {
 		panic("can't encode: " + err.Error())
 	}
+}
+
+func rewardByStep(header *types.Header) *big.Int {
+	// reward by kak
+	//5000 1kak
+	//3000 0.6kak
+	//1000 0.2kak
+	//500  0.1kak
+	//100  0.06kak
+	//30   0.03kak
+	amount := getStakeAmount()
+	reward := big.NewInt(1e+16)
+	switch {
+	case amount.Cmp(new(big.Int).Mul(KAKBlockReward,big.NewInt(50000000))) >= 0:
+		reward = big.NewInt(1e+18)
+	case amount.Cmp(new(big.Int).Mul(KAKBlockReward,big.NewInt(30000000))) >= 0:
+		reward = big.NewInt(5e+17)
+	case amount.Cmp(new(big.Int).Mul(KAKBlockReward,big.NewInt(10000000))) >= 0:
+		reward = big.NewInt(2e+17)
+	case amount.Cmp(new(big.Int).Mul(KAKBlockReward,big.NewInt(5000000))) >= 0:
+		reward = big.NewInt(1e+17)
+	case amount.Cmp(new(big.Int).Mul(KAKBlockReward,big.NewInt(1000000))) >= 0:
+		reward = big.NewInt(6e+16)
+	case amount.Cmp(new(big.Int).Mul(KAKBlockReward,big.NewInt(300000))) >= 0:
+		reward = big.NewInt(3e+16)
+	}
+	return reward
+}
+
+func rewardByTime(header *types.Header) *big.Int{
+	// reward by half for two year
+	period := header.Number.Uint64() / uint64(KAKRewardPeriod)
+	reward := new(big.Int).Set(KAKBlockReward)
+	if period != 0 {
+		period = uint64(math.Pow(float64(2), float64(period)))
+		reward.Div(reward, big.NewInt(int64(period)))
+	}
+	return reward
 }

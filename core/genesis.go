@@ -338,6 +338,8 @@ func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 		return params.GoerliChainConfig
 	case ghash == params.KilnGenesisHash:
 		return DefaultKilnGenesisBlock().Config
+	case ghash == params.KAKGenesisHash:
+		return DefaultKAKGenesisBlock().Config
 	default:
 		return params.AllEthashProtocolChanges
 	}
@@ -497,6 +499,15 @@ func DefaultSepoliaGenesisBlock() *Genesis {
 func DefaultKilnGenesisBlock() *Genesis {
 	g := new(Genesis)
 	reader := strings.NewReader(KilnAllocData)
+	if err := json.NewDecoder(reader).Decode(g); err != nil {
+		panic(err)
+	}
+	return g
+}
+
+func DefaultKAKGenesisBlock() *Genesis {
+	g := new(Genesis)
+	reader := strings.NewReader(KAKAllocData)
 	if err := json.NewDecoder(reader).Decode(g); err != nil {
 		panic(err)
 	}
