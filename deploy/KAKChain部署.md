@@ -1,126 +1,123 @@
-# KAKChain部署
+# KAKSmart Chain Deployment
 
-## 1. 简介
+## 1. Introduction
 
-KAKChain是一个POS共识的区块链，基于官方以太坊开发。为了保持最大的兼容性，EVM、合约、Web3、RPC等接口和以太坊完全一致。KAKChain为了降低能源功耗，摒弃了以太坊的POW共识机制，实现了质押出块的POS共识机制。
+KAKSmartChain(KSC) is a POS consensus blockchain developed based on the Ethereum. In order to maintain maximum compatibility, EVM, contract, Web3, RPC and other interfaces are exactly the same as those of Ethereum. In order to reduce energy consumption, KSC abandoned the POW consensus mechanism of Ethereum and realized the POS consensus mechanism to generate blocks.
 
-## 2. 部署
+## 2. Deployment
 
-### 2.1 硬件要求：
+### 2.1 Hardware Requirement：
 
-最小:
+Minimum:
 
-- 双核CPU
-- 4GB 内存
-- 1TB 空余硬盘同步数据
-- 8 MBit/sec 网速带宽
+- Dual core CPU
+- 4GB Memory
+- 1TB Free hard disk sync data
+- 8 MBit/sec Bandwidth
 
-推荐:
+Recommendation:
 
-- 高速四核以上CPU
-- 16GB以上内存
-- 至少1T的高速固态硬盘
-- 25+ MBit/sec 网络速度
+- High-speed quad-core CPU or above
+- 16GB Memory or above
+- 1T high-speed SSD or above
+- 25+ MBit/sec Bandwidth
 
-### 2.2 编译
+### 2.2 Compile
 
-KAKChain依赖golang，需要先部署golang的运行环境，请参照golang官方说明。
-
-下载KAKChain源码：
+KAKSmartChain relys on golang, so you need to deploy golang operating environment first. Please refer to golang official document.
+Download KAKSmartChain source code：
 
 ~~~bash
-$ git clone https://gitee.com/xyberium/kakchian.git
+$ git clone https://github.com/KakLab/KAKSmartChian.git
 ~~~
 
-进入kakchain目录，并编译：
+Enter KAKSmartChian directory, and compile:
 
 ~~~bash
-$ cd kakchain
+$ cd KAKSmartChian
 $ make all
 ~~~
 
-编译后的geth在目录“build/bin/”下面。geth为kakchain的主程序。
+The compiled geth is under the directory "build/bin/". geth is the main program of KAKSmartChian.
 
 ~~~bash
 $ ls build/bin/
 abidump  abigen  bootnode  checkpoint-admin  clef  devp2p  ethkey  evm  faucet  geth  p2psim  puppeth  rlpdump
 ~~~
 
-### 2.3 运行
+### 2.3 Operating
 
-KAKChain节点内置了根节点信息，启动后会自动同步链上数据。根据功能不同，可以分为轻节点、RPC节点、挖矿节点等。
+The KAKSmartChain node has built-in root node information, whose data will be automatically synchronized on the chain after startup. According to different functions, it can be divided into light nodes, RPC nodes, mining nodes, etc.
 
-**轻节点：**
+**light nodes：**
 
-轻节点会自动同步数据，支持web3等相关的操作。启动轻节点比较简单，直接加上参数“--kak”就可以。
+Light nodes will automatically synchronize data and support web3 and other related operations. It is relatively simple to start a light node, just add the parameter "--kak" directly.
 
 ~~~bash
 $ geth --kak
 
-同步的数据会保存在用户的根目录。也可以制定目录。下面命令把链数据保存在dataxxx目录里。
-
-~~~bash
+# Synchronized data will be saved in the user's root directory, or a custom one. The following command saves the chain data in the dataxxx directory.。
 $ geth --kak --datadir dataxxx
 ~~~
 
-**RPC节点：**
+**RPC node：**
 
-RPC节点提供RPC服务，RPC服务支撑上层架构的DAPP、钱包等应用。
-
-通过下面命令启动RPC节点。
+RPC nodes provide RPC services, which support applications such as DAPPs and wallets in the upper-layer architecture.
+Start RPC nodes with the following command.
 
 ~~~bash
 $ geth --datadir node0 --syncmode=full --gcmode=archive --kak --http --http.vhosts='*' --http.addr '0.0.0.0' --http.port 8545 --http.api 'admin,debug,web3,eth,txpool,personal,miner,net' --http.corsdomain '*' --miner.gasprice 142857200000
 ~~~
 
-这样就部署了一个RPC节点，通过端口8545提供web3的接口。
+An RPC node is deployed to provide the web3 interface through port 8545.
 
-**挖矿节点：**
+**Mining node:：**
 
-KAKChain是POS的共识机制，矿工通过质押获得出块权。
-
-挖矿节点需要解锁账号，用于打包出块的时候签名。先用ethkey命令生成账户信息，账户信息存在“keyfile”中，并把公钥地址打印出来。
+KAKSmartChain applies the POS consensus mechanism, and miners obtain block generation right through staking.
+Mining nodes need to unlock their account before signing when a block is packaged. First use the command ethkey to generate account information, which is stored in the "keyfile", and the public key address is printed out.
 
 ~~~bash
 $ ethkey  generate keyfile
 Password: 
 Repeat password: 
-Address: 0xE061Eeb8E33CFaBb1C8Eb4A8302c5616aFc3E50e #生成账户的公钥地址
+Address: 0xE061Eeb8E33CFaBb1C8Eb4A8302c5616aFc3E50e #Generate the public key address of the account
 ~~~
 
-举例，链上数据存储在“node1”目录。
+For example, on-chain data is stored in the "node1" directory.
 
 ~~~bash
-$ mkdir  -p node1/keystore #创建数据目录
-$ cp keyfile node1/keystore/ #把账户文件拷贝到keystore目录
-$ geth --datadir node1 --syncmode=full --gcmode=archive --kak --allow-insecure-unlock -unlock '0xE061Eeb8E33CFaBb1C8Eb4A8302c5616aFc3E50e' --password password.txt --mine --miner.gasprice 142857200000 #启动节点
+$ mkdir  -p node1/keystore #Create data directory
+$ cp keyfile node1/keystore/ #Copy account file tokeystore directory
+$ geth --datadir node1 --syncmode=full --gcmode=archive --kak --allow-insecure-unlock -unlock '0xE061Eeb8E33CFaBb1C8Eb4A8302c5616aFc3E50e' --password password.txt --mine --miner.gasprice 142857200000 --http --http.vhosts='*' --http.addr 'localhost' --http.port 8545 --http.api 'admin,web3,eth,txpool,personal,miner,net' --http.corsdomain '*' #Start node
 ~~~
 
-相应参数解释：
+Corresponding parameter explanation：
 
 ~~~bash
-# --syncmode=full 全节点数据同步
-# --allow-insecure-unlock -unlock '0xE061Eeb8E33CFaBb1C8Eb4A8302c5616aFc3E50e' 解锁挖矿节点账户
-# --password password.txt keyfile文件的密码
-# --mine 启动挖矿
-# --miner.gasprice 142857200000 最低交易手续费的price
+--syncmode=full #Data sync of full node
+--allow-insecure-unlock -unlock '0xE061Eeb8E33CFaBb1C8Eb4A8302c5616aFc3E50e' # Unlock mining node account
+--password password.txt # keyfile File password
+--mine # Start mining
+--miner.gasprice 142857200000 # minimum transaction fee price,As the network changes
+--http #start http server for Staking contract
 ~~~
 
-**启动命令行界面**：执行web3的相关指令。
+:exclamation:**security warning** :exclamation:Enable the firewall and prohibit external access to port 8545.
+
+**Start the command line**：Execute the relevant instructions of web3.
 
 ~~~bash
 $ geth attach node1/geth.ipc
 ~~~
 
-### 2.4 质押
+### 2.4 Staking
 
-KAKChain通过POS质押合约，自动获得出块权。
+KAKSmartChain automatically obtains the right to generate blocks through the POS staking contract.
+The current staking limit is 100,000 KAK. After the staking exceeds the limit, a vote will be held. After receiving the votes of 1/2 of the miner nodes, the new miner address will be written into the block and broadcast on the entire network. The new miners enter the block generation process.
 
-目前的质押阈值为10万个KAK，质押超过阈值后，进行投票，收到1/2的矿工节点投票后，新矿工地址写入区块，全网广播。新矿工进入出块流程。
+POS staking contract address：0xE9Da5f8dD481474b2fDCfe16b9C870d47fE4c530
 
-POS质押合约地址：0xE9Da5f8dD481474b2fDCfe16b9C870d47fE4c530
-
-合约abi：
+Contract abi：
 
 ~~~
 [
@@ -154,25 +151,25 @@ POS质押合约地址：0xE9Da5f8dD481474b2fDCfe16b9C870d47fE4c530
 ]
 ~~~
 
-通过接口stake和unstake进行质押和赎回操作。
+Staking and redemption operations are performed through the interface stake and unstake.
 
-合约的详情请参见合约源码：deploy/stake/stake.sol。
+For details of the contract, please refer to the contract source code：deploy/stake/stake.sol。
 
-**通过浏览器质押：**
+**Staking via Browser：**
 
-[通过浏览器质押地址](http://mainnet.kakscan.com/address/0xE9Da5f8dD481474b2fDCfe16b9C870d47fE4c530/write-contract)，打开这个链接后，显示质押合约的操作界面，可以通过调用第二个函数“stake”进行质押。在弹出的钱包选择界面选择矿工节点的账户钱包，然后质押合约记录矿工的地址，该地址的挖矿节点也就有了出块权。
+Through the [Browser Staking Address](http://mainnet.kakscan.com/address/0xE9Da5f8dD481474b2fDCfe16b9C870d47fE4c530/write-contract). After opening this link, the operation interface of the staking contract is displayed, and the staking can be made by calling the second function "stake". In the pop-up wallet selection interface, select the account wallet of the miner node, and then record the address of the miner in thestaking contract, and the mining node of this address will have the right to generate blocks.
 
 ![staking](/home/jingwei/go/src/gitee.com/xyberium/kakchian/deploy/jpg/staking.jpg)
 
-目前质押阈值是10万个KAK，通过矿工挖矿账户的钱包做了质押后，矿工地址就有了出块权，会轮询出块。
+The current staking limit is 100,000 KAK. After staking through the wallet of the miner's account, the miner's address has the right to generate blocks in queue.
 
-矿工没有出块奖励，只有打包交易收取手续费的收益。
+There is no block generation reward for miners, only the income from packaging and transaction fees.。
 
 
 
-## 3. 浏览器
+## 3. **Browser**
 
-通过浏览器地址：http://mainnet.kakscan.com/
+Browse related information through：http://mainnet.kakscan.com/
 
-观察和查询链的相关信息。
+
 
