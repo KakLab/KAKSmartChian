@@ -1,108 +1,123 @@
-# KAKChain部署
+# KAKSmart Chain Deployment
 
-## 1. 简介
+## 1. Introduction
 
-KAKChain是一个POS共识的区块链，基于官方以太坊开发。为了保持最大的兼容性，EVM、合约、Web3、RPC等接口和以太坊完全一致。KAKChain为了降低能源功耗，摒弃了以太坊的POW共识机制，实现了质押出块的POS共识机制。
+KAKSmartChain(KSC) is a POS consensus blockchain developed based on the Ethereum. In order to maintain maximum compatibility, EVM, contract, Web3, RPC and other interfaces are exactly the same as those of Ethereum. In order to reduce energy consumption, KSC abandoned the POW consensus mechanism of Ethereum and realized the POS consensus mechanism to generate blocks.
 
-## 2. 部署
+## 2. Deployment
 
-### 2.1 硬件要求：
+### 2.1 Hardware Requirement：
 
-最小:
+Minimum:
 
-- 双核CPU
-- 4GB 内存
-- 1TB 空余硬盘同步数据
-- 8 MBit/sec 网速带宽
+- Dual core CPU
+- 4GB Memory
+- 1TB Free hard disk sync data
+- 8 MBit/sec Bandwidth
 
-推荐:
+Recommendation:
 
-- 高速四核以上CPU
-- 16GB以上内存
-- 至少1T的高速固态硬盘
-- 25+ MBit/sec 网络速度
+- High-speed quad-core CPU or above
+- 16GB Memory or above
+- 1T high-speed SSD or above
+- 25+ MBit/sec Bandwidth
 
-### 2.2 编译
+### 2.2 Compile
 
-KAKChain依赖golang，需要先部署golang的运行环境，请参照golang官方说明。
+KAKSmartChain relys on golang, so you need to deploy golang operating environment first. Please refer to golang official document.
+Download KAKSmartChain source code：
 
-下载KAKChain源码：
-
-~~~
-git clone https://github.com/KakLab/KAKSmartChian.git
-~~~
-
-进入KAKSmartChian目录，并编译：
-
-~~~
-cd KAKSmartChian
-make all
+~~~bash
+$ git clone https://github.com/KakLab/KAKSmartChian.git
 ~~~
 
-编译后的geth在目录“build/bin/”下面。geth为kakchain的主程序。
+Enter KAKSmartChian directory, and compile:
 
-### 2.3 运行
-
-**初始化节点：**
-
-创世配置文件的路径：“deploy/genesis.json”。
-
-~~~
-geth init genesis.json
+~~~bash
+$ cd KAKSmartChian
+$ make all
 ~~~
 
-默认在用户的根目录下生成初始化文件，也可以指定目录：
+The compiled geth is under the directory "build/bin/". geth is the main program of KAKSmartChian.
 
-~~~
-mkdir node1
-geth --datadir node1  init genesis.json
-~~~
-
-**启动节点：**
-
-启动节点需要访问kakchain的根节点，通过bootnode来进行路由控制。bootnode的地址为：
-
-~~~
-enode://895ee59590233648b19f2e111784cbf23e7842c364d68c9434282491ba84c5f60dcd42028bbf05d3ea77b8a991f65e2d6c0f835465ce90ae02611cd5aee1ab05@103.50.206.103:0?discport=30310
+~~~bash
+$ ls build/bin/
+abidump  abigen  bootnode  checkpoint-admin  clef  devp2p  ethkey  evm  faucet  geth  p2psim  puppeth  rlpdump
 ~~~
 
-kakchain的chainid和networkid：5198。
+### 2.3 Operating
 
-启动全节点：全节点会同步所有的区块，并把区块保存在本地。并且启动web3接口，可以通过rpc调用。
+The KAKSmartChain node has built-in root node information, whose data will be automatically synchronized on the chain after startup. According to different functions, it can be divided into light nodes, RPC nodes, mining nodes, etc.
 
-~~~
-geth --datadir node1 --syncmode=full --gcmode=archive --networkid 5198 --port 30311 --http --http.vhosts='*' --http.addr '0.0.0.0' --http.port 8545 --http.api 'admin,debug,web3,eth,txpool,personal,miner,net' --http.corsdomain '*' --allow-insecure-unlock --bootnodes 'enode://895ee59590233648b19f2e111784cbf23e7842c364d68c9434282491ba84c5f60dcd42028bbf05d3ea77b8a991f65e2d6c0f835465ce90ae02611cd5aee1ab05@103.50.206.103:0?discport=30310' 
-~~~
+**light nodes：**
 
-启动默认挖矿节点：
+Light nodes will automatically synchronize data and support web3 and other related operations. It is relatively simple to start a light node, just add the parameter "--kak" directly.
 
-~~~
-geth --datadir node1 --syncmode=full --gcmode=archive --networkid 5198 --port 30311 --http --http.vhosts='*' --http.addr '0.0.0.0' --http.port 8545 --http.api 'admin,debug,web3,eth,txpool,personal,miner,net' --http.corsdomain '*' --allow-insecure-unlock --bootnodes 'enode://895ee59590233648b19f2e111784cbf23e7842c364d68c9434282491ba84c5f60dcd42028bbf05d3ea77b8a991f65e2d6c0f835465ce90ae02611cd5aee1ab05@103.50.206.103:0?discport=30310'  -unlock '0x6e9dee4f886a7bb1ee824700b4f7302388b00510' --password password.txt --mine
-~~~
+~~~bash
+$ geth --kak
 
-相应参数解释：
-
-~~~
-# 0x6e9dee4f886a7bb1ee824700b4f7302388b00510 为节点的公钥地址，需要替换为自己的公钥地址
-# --password 指定私钥的解密秘钥
-# --mine 开启挖矿流程
+# Synchronized data will be saved in the user's root directory, or a custom one. The following command saves the chain data in the dataxxx directory.。
+$ geth --kak --datadir dataxxx
 ~~~
 
-启动命令行界面：执行web3的相关指令。
+**RPC node：**
 
+RPC nodes provide RPC services, which support applications such as DAPPs and wallets in the upper-layer architecture.
+Start RPC nodes with the following command.
+
+~~~bash
+$ geth --datadir node0 --syncmode=full --gcmode=archive --kak --http --http.vhosts='*' --http.addr '0.0.0.0' --http.port 8545 --http.api 'admin,debug,web3,eth,txpool,personal,miner,net' --http.corsdomain '*' --miner.gasprice 142857200000
 ~~~
-geth attach node1/geth.ipc
+
+An RPC node is deployed to provide the web3 interface through port 8545.
+
+**Mining node:：**
+
+KAKSmartChain applies the POS consensus mechanism, and miners obtain block generation right through staking.
+Mining nodes need to unlock their account before signing when a block is packaged. First use the command ethkey to generate account information, which is stored in the "keyfile", and the public key address is printed out.
+
+~~~bash
+$ ethkey  generate keyfile
+Password: 
+Repeat password: 
+Address: 0xE061Eeb8E33CFaBb1C8Eb4A8302c5616aFc3E50e #Generate the public key address of the account
 ~~~
 
-### 2.4 质押
+For example, on-chain data is stored in the "node1" directory.
 
-KAKChain通过POS质押合约，自动获得出块权。
+~~~bash
+$ mkdir  -p node1/keystore #Create data directory
+$ cp keyfile node1/keystore/ #Copy account file tokeystore directory
+$ geth --datadir node1 --syncmode=full --gcmode=archive --kak --allow-insecure-unlock -unlock '0xE061Eeb8E33CFaBb1C8Eb4A8302c5616aFc3E50e' --password password.txt --mine --miner.gasprice 142857200000 --http --http.vhosts='*' --http.addr 'localhost' --http.port 8545 --http.api 'admin,web3,eth,txpool,personal,miner,net' --http.corsdomain '*' #Start node
+~~~
 
-目前的质押阈值为10万个KAK，质押超过阈值后，进行投票，收到1/2的矿工节点投票后，新矿工地址写入区块，全网广播。新矿工进入出块流程。
+Corresponding parameter explanation：
 
-POS质押合约地址：0xE9Da5f8dD481474b2fDCfe16b9C870d47fE4c530
+~~~bash
+--syncmode=full #Data sync of full node
+--allow-insecure-unlock -unlock '0xE061Eeb8E33CFaBb1C8Eb4A8302c5616aFc3E50e' # Unlock mining node account
+--password password.txt # keyfile File password
+--mine # Start mining
+--miner.gasprice 142857200000 # minimum transaction fee price,As the network changes
+--http #start http server for Staking contract
+~~~
 
-合约abi：
+:exclamation:**security warning** :exclamation:Enable the firewall and prohibit external access to port 8545.
+
+**Start the command line**：Execute the relevant instructions of web3.
+
+~~~bash
+$ geth attach node1/geth.ipc
+~~~
+
+### 2.4 Staking
+
+KAKSmartChain automatically obtains the right to generate blocks through the POS staking contract.
+The current staking limit is 100,000 KAK. After the staking exceeds the limit, a vote will be held. After receiving the votes of 1/2 of the miner nodes, the new miner address will be written into the block and broadcast on the entire network. The new miners enter the block generation process.
+
+POS staking contract address：0xE9Da5f8dD481474b2fDCfe16b9C870d47fE4c530
+
+Contract abi：
 
 ~~~
 [
@@ -136,13 +151,25 @@ POS质押合约地址：0xE9Da5f8dD481474b2fDCfe16b9C870d47fE4c530
 ]
 ~~~
 
-通过接口stake和unstake进行质押和赎回操作。
+Staking and redemption operations are performed through the interface stake and unstake.
 
-合约的详情请参见合约源码：deploy/stake/stake.sol。
+For details of the contract, please refer to the contract source code：deploy/stake/stake.sol。
 
-## 3. 浏览器
+**Staking via Browser：**
 
-通过浏览器地址：http://103.50.206.103:4000/
+Through the [Browser Staking Address](http://mainnet.kakscan.com/address/0xE9Da5f8dD481474b2fDCfe16b9C870d47fE4c530/write-contract). After opening this link, the operation interface of the staking contract is displayed, and the staking can be made by calling the second function "stake". In the pop-up wallet selection interface, select the account wallet of the miner node, and then record the address of the miner in thestaking contract, and the mining node of this address will have the right to generate blocks.
 
-观察和查询链的相关信息。
+![staking](/home/jingwei/go/src/gitee.com/xyberium/kakchian/deploy/jpg/staking.jpg)
+
+The current staking limit is 100,000 KAK. After staking through the wallet of the miner's account, the miner's address has the right to generate blocks in queue.
+
+There is no block generation reward for miners, only the income from packaging and transaction fees.。
+
+
+
+## 3. **Browser**
+
+Browse related information through：http://mainnet.kakscan.com/
+
+
 
