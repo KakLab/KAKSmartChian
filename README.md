@@ -159,7 +159,7 @@ For details of the contract, please refer to the contract source code：deploy/s
 
 Through the [Browser Staking Address](http://mainnet.kakscan.com/address/0xE9Da5f8dD481474b2fDCfe16b9C870d47fE4c530/write-contract). After opening this link, the operation interface of the staking contract is displayed, and the staking can be made by calling the second function "stake". In the pop-up wallet selection interface, select the account wallet of the miner node, and then record the address of the miner in thestaking contract, and the mining node of this address will have the right to generate blocks.
 
-![staking](/home/jingwei/go/src/gitee.com/xyberium/kakchian/deploy/jpg/staking.jpg)
+![staking](./deploy/jpg/staking.jpg)
 
 The current staking limit is 100,000 KAK. After staking through the wallet of the miner's account, the miner's address has the right to generate blocks in queue.
 
